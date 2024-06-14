@@ -297,7 +297,7 @@ class FeedbackForm {
                 <input type="text" id="lastName" name="lastName" required>
             </div>
             <div>
-                <label for="email">E-posta Adresi:</label>
+                <label for="email">E-Mail:</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div>
