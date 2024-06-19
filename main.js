@@ -1,3 +1,6 @@
+import html2canvas from "html2canvas";
+import SelectionArea from "@viselect/vanilla";
+
 class FeedbackButton {
   constructor() {
     this.button = this.createButton();
@@ -208,7 +211,6 @@ class ScreenshotCanvas {
         tempCanvas.width = rect.width;
         tempCanvas.height = rect.height;
 
-
         tempCtx.drawImage(
           canvas,
           rect.left,
@@ -406,4 +408,6 @@ class FeedbackForm {
   }
 }
 
-new FeedbackButton();
+document.addEventListener("DOMContentLoaded", function () {
+  new FeedbackButton();
+});
