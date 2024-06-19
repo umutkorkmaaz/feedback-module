@@ -1,5 +1,5 @@
-import html2canvas from "html2canvas";
-import SelectionArea from "@viselect/vanilla";
+import html2canvas from 'html2canvas';
+import SelectionArea from '@viselect/vanilla';
 
 class FeedbackButton {
   constructor() {
@@ -9,17 +9,17 @@ class FeedbackButton {
   }
 
   createButton() {
-    const button = document.createElement("button");
-    button.textContent = "Feedback";
-    button.style.position = "fixed";
-    button.style.bottom = "20px";
-    button.style.right = "20px";
-    button.style.zIndex = "999999";
+    const button = document.createElement('button');
+    button.textContent = 'Feedback';
+    button.style.position = 'fixed';
+    button.style.bottom = '20px';
+    button.style.right = '20px';
+    button.style.zIndex = '999999';
     return button;
   }
 
   attachEvents() {
-    this.button.addEventListener("click", () => {
+    this.button.addEventListener('click', () => {
       this.selectArea();
     });
     document.body.appendChild(this.button);
@@ -27,19 +27,19 @@ class FeedbackButton {
 
   selectArea() {
     const selection = new SelectionArea({
-      selectables: ["body *"],
-      boundaries: ["body"],
+      selectables: ['body *'],
+      boundaries: ['body']
     });
 
-    selection.on("start", (event) => {
-      document.getElementsByTagName("body")[0].style.cursor = "crosshair";
-      document.getElementsByTagName("body")[0].style.userSelect = "none";
+    selection.on('start', () => {
+      document.getElementsByTagName('body')[0].style.cursor = 'crosshair';
+      document.getElementsByTagName('body')[0].style.userSelect = 'none';
     });
 
-    selection.on("stop", (event) => {
-      document.getElementsByTagName("body")[0].style.cursor = "auto";
-      document.getElementsByTagName("body")[0].style.userSelect = "auto";
-      this.openFeedbackPopup(selection);
+    selection.on('stop', async () => {
+      document.getElementsByTagName('body')[0].style.cursor = 'auto';
+      document.getElementsByTagName('body')[0].style.userSelect = 'auto';
+      await this.openFeedbackPopup(selection);
     });
   }
 
@@ -49,29 +49,22 @@ class FeedbackButton {
     feedbackPopup.display();
   }
 }
+
 class ScreenshotCanvas {
   constructor() {
-    this.canvas = document.createElement("canvas");
-    this.context = this.canvas.getContext("2d");
+    this.canvas = document.createElement('canvas');
+    this.context = this.canvas.getContext('2d');
 
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.canvas.style.position = "absolute";
-    this.canvas.style.top = "0";
-    this.canvas.style.left = "0";
-    this.canvas.style.zIndex = "999999";
-    this.canvas.style.marginBottom = "20px";
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.top = '0';
+    this.canvas.style.left = '0';
+    this.canvas.style.zIndex = '999999';
+    this.canvas.style.marginBottom = '20px';
 
-    this.colors = [
-      "black",
-      "red",
-      "blue",
-      "green",
-      "yellow",
-      "orange",
-      "purple",
-    ];
-    this.currentColor = "black";
+    this.colors = ['black', 'red', 'blue', 'green', 'yellow', 'orange', 'purple'];
+    this.currentColor = 'black';
     this.currentLineWidth = 5;
     this.context.lineWidth = this.currentLineWidth;
     this.attachEvents();
@@ -81,11 +74,11 @@ class ScreenshotCanvas {
   }
 
   attachEvents() {
-    this.canvas.addEventListener("mousedown", this.startDrawing.bind(this));
-    this.canvas.addEventListener("mousemove", this.draw.bind(this));
-    this.canvas.addEventListener("mouseup", this.stopDrawing.bind(this));
-    this.canvas.addEventListener("mouseout", this.stopDrawing.bind(this));
-    window.addEventListener("keydown", this.handleKeyPress.bind(this));
+    this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+    this.canvas.addEventListener('mousemove', this.draw.bind(this));
+    this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+    this.canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+    window.addEventListener('keydown', this.handleKeyPress.bind(this));
     this.drawing = false;
   }
 
@@ -127,16 +120,16 @@ class ScreenshotCanvas {
   }
 
   handleKeyPress(event) {
-    const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
-    if ((isMac ? event.metaKey : event.ctrlKey) && event.key === "z") {
+    if ((isMac ? event.metaKey : event.ctrlKey) && event.key === 'z') {
       event.preventDefault();
       this.undo();
     }
     if (
       (isMac ? event.metaKey : event.ctrlKey) &&
       event.shiftKey &&
-      (event.key === "Z" || event.key === "z")
+      (event.key === 'Z' || event.key === 'z')
     ) {
       event.preventDefault();
       this.redo();
@@ -147,7 +140,7 @@ class ScreenshotCanvas {
     const rect = this.canvas.getBoundingClientRect();
     return {
       x: (event.clientX - rect.left) * (this.canvas.width / rect.width),
-      y: (event.clientY - rect.top) * (this.canvas.height / rect.height),
+      y: (event.clientY - rect.top) * (this.canvas.height / rect.height)
     };
   }
 
@@ -165,7 +158,7 @@ class ScreenshotCanvas {
     this.context.stroke();
   }
 
-  stopDrawing(event) {
+  stopDrawing() {
     if (this.drawing) {
       this.drawing = false;
       this.context.stroke();
@@ -176,12 +169,12 @@ class ScreenshotCanvas {
   changeColor(color) {
     this.currentColor = color;
     this.context.strokeStyle = color;
-    this.context.globalCompositeOperation = "source-over";
+    this.context.globalCompositeOperation = 'source-over';
   }
 
   activateEraser() {
-    this.context.globalCompositeOperation = "destination-out";
-    this.context.strokeStyle = "rgba(0,0,0,1)";
+    this.context.globalCompositeOperation = 'destination-out';
+    this.context.strokeStyle = 'rgba(0,0,0,1)';
   }
 
   changeLineWidth(newWidth) {
@@ -202,10 +195,10 @@ class ScreenshotCanvas {
       scrollX: -scX,
       scrollY: -scY,
       windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
-    }).then((canvas) => {
-      const tempCanvas = document.createElement("canvas");
-      const tempCtx = tempCanvas.getContext("2d");
+      windowHeight: window.innerHeight
+    }).then(canvas => {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       if (rect.width > 10 && rect.height > 10) {
         tempCanvas.width = rect.width;
@@ -241,7 +234,7 @@ class ScreenshotCanvas {
   }
 
   getScreenshotAsDataURL() {
-    return this.canvas.toDataURL("image/png");
+    return this.canvas.toDataURL('image/png');
   }
 }
 
@@ -255,33 +248,33 @@ class FeedbackPopup {
   }
 
   createColorPalette() {
-    const palette = document.createElement("div");
-    palette.style.position = "absolute";
-    palette.style.bottom = "10px";
-    palette.style.left = "10px";
-    palette.style.padding = "5px";
-    palette.style.border = "1px solid #ccc";
-    palette.style.borderRadius = "5px";
-    palette.style.display = "flex";
+    const palette = document.createElement('div');
+    palette.style.position = 'absolute';
+    palette.style.bottom = '10px';
+    palette.style.left = '10px';
+    palette.style.padding = '5px';
+    palette.style.border = '1px solid #ccc';
+    palette.style.borderRadius = '5px';
+    palette.style.display = 'flex';
 
-    this.screenshotCanvas.colors.forEach((color) => {
-      const colorButton = document.createElement("button");
+    this.screenshotCanvas.colors.forEach(color => {
+      const colorButton = document.createElement('button');
       colorButton.style.backgroundColor = color;
-      colorButton.style.width = "30px";
-      colorButton.style.height = "30px";
-      colorButton.style.border = "none";
-      colorButton.style.marginRight = "5px";
-      colorButton.style.borderRadius = "50%";
+      colorButton.style.width = '30px';
+      colorButton.style.height = '30px';
+      colorButton.style.border = 'none';
+      colorButton.style.marginRight = '5px';
+      colorButton.style.borderRadius = '50%';
       colorButton.onclick = () => this.screenshotCanvas.changeColor(color);
       palette.appendChild(colorButton);
     });
 
-    const eraserButton = document.createElement("button");
-    eraserButton.textContent = "Eraser";
-    eraserButton.style.width = "60px";
-    eraserButton.style.height = "30px";
-    eraserButton.style.borderRadius = "5px";
-    eraserButton.style.marginLeft = "5px";
+    const eraserButton = document.createElement('button');
+    eraserButton.textContent = 'Eraser';
+    eraserButton.style.width = '60px';
+    eraserButton.style.height = '30px';
+    eraserButton.style.borderRadius = '5px';
+    eraserButton.style.marginLeft = '5px';
     eraserButton.onclick = () => this.screenshotCanvas.activateEraser();
     palette.appendChild(eraserButton);
 
@@ -289,24 +282,23 @@ class FeedbackPopup {
   }
 
   createLineWidthSlider() {
-    const sliderContainer = document.createElement("div");
-    sliderContainer.style.position = "absolute";
-    sliderContainer.style.top = "10px";
-    sliderContainer.style.right = "10px";
-    sliderContainer.style.padding = "5px";
-    sliderContainer.style.border = "1px solid #ccc";
-    sliderContainer.style.borderRadius = "5px";
+    const sliderContainer = document.createElement('div');
+    sliderContainer.style.position = 'absolute';
+    sliderContainer.style.top = '10px';
+    sliderContainer.style.right = '10px';
+    sliderContainer.style.padding = '5px';
+    sliderContainer.style.border = '1px solid #ccc';
+    sliderContainer.style.borderRadius = '5px';
 
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = "1";
-    slider.max = "20";
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = '1';
+    slider.max = '20';
     slider.value = this.screenshotCanvas.currentLineWidth;
-    slider.oninput = (e) =>
-      this.screenshotCanvas.changeLineWidth(e.target.value);
+    slider.oninput = e => this.screenshotCanvas.changeLineWidth(e.target.value);
 
-    const sliderLabel = document.createElement("label");
-    sliderLabel.textContent = "Çizgi Kalınlığı: ";
+    const sliderLabel = document.createElement('label');
+    sliderLabel.textContent = 'Çizgi Kalınlığı: ';
     sliderLabel.appendChild(slider);
 
     sliderContainer.appendChild(sliderLabel);
@@ -314,18 +306,18 @@ class FeedbackPopup {
   }
 
   createPopup() {
-    const popup = document.createElement("div");
-    popup.style.position = "fixed";
-    popup.style.top = "50%";
-    popup.style.left = "50%";
-    popup.style.transform = "translate(-50%, -50%)";
-    popup.style.width = "80%";
-    popup.style.height = "80%";
-    popup.style.backgroundColor = "#fff";
-    popup.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-    popup.style.borderRadius = "8px";
-    popup.style.display = "flex";
-    popup.style.zIndex = "999999";
+    const popup = document.createElement('div');
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.width = '80%';
+    popup.style.height = '80%';
+    popup.style.backgroundColor = '#fff';
+    popup.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+    popup.style.borderRadius = '8px';
+    popup.style.display = 'flex';
+    popup.style.zIndex = '999999';
     document.body.appendChild(popup);
     return popup;
   }
@@ -344,9 +336,9 @@ class FeedbackForm {
   }
 
   createForm() {
-    const form = document.createElement("form");
-    form.style.width = "50%";
-    form.style.padding = "20px";
+    const form = document.createElement('form');
+    form.style.width = '50%';
+    form.style.padding = '20px';
     form.innerHTML = `
             <div>
                 <label for="firstName">Firstname:</label>
@@ -377,10 +369,10 @@ class FeedbackForm {
   }
 
   attachEvents() {
-    this.form.addEventListener("submit", this.handleSubmit.bind(this));
+    this.form.addEventListener('submit', this.handleSubmit.bind(this));
     this.form
-      .querySelector("#cancelButton")
-      .addEventListener("click", this.handleCancel.bind(this));
+      .querySelector('#cancelButton')
+      .addEventListener('click', this.handleCancel.bind(this));
   }
 
   handleSubmit(event) {
@@ -392,9 +384,9 @@ class FeedbackForm {
       email: this.form.email.value,
       subject: this.form.subject.value,
       description: this.form.description.value,
-      screenshot: screenshotData,
+      screenshot: screenshotData
     };
-    console.log("Form data with screenshot:", data);
+    console.log('Form data with screenshot:', data);
     this.closePopup();
   }
 
@@ -408,6 +400,6 @@ class FeedbackForm {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function() {
   new FeedbackButton();
 });

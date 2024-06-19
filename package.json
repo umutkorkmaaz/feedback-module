@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@viselect/vanilla": "^3.5.1",
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "prettier": "^3.3.2"
   }
 }
