@@ -11,28 +11,54 @@ class FeedbackButton {
     button.style.position = "fixed";
     button.style.bottom = "20px";
     button.style.right = "20px";
+    button.style.zIndex = "999999";
     return button;
   }
 
   attachEvents() {
     this.button.addEventListener("click", () => {
-      this.openFeedbackPopup();
+      this.selectArea();
     });
     document.body.appendChild(this.button);
   }
 
-  async openFeedbackPopup() {
-    await this.screenshotCanvas.captureScreen();
-    const popup = new FeedbackPopup(this.screenshotCanvas);
-    popup.display();
+  selectArea() {
+    const selection = new SelectionArea({
+      selectables: ["body *"],
+      boundaries: ["body"],
+    });
+
+    selection.on("start", (event) => {
+      document.getElementsByTagName("body")[0].style.cursor = "crosshair";
+      document.getElementsByTagName("body")[0].style.userSelect = "none";
+    });
+
+    selection.on("stop", (event) => {
+      document.getElementsByTagName("body")[0].style.cursor = "auto";
+      document.getElementsByTagName("body")[0].style.userSelect = "auto";
+      this.openFeedbackPopup(selection);
+    });
+  }
+
+  async openFeedbackPopup(selection) {
+    await this.screenshotCanvas.captureScreen(selection);
+    const feedbackPopup = new FeedbackPopup(this.screenshotCanvas);
+    feedbackPopup.display();
   }
 }
 class ScreenshotCanvas {
   constructor() {
     this.canvas = document.createElement("canvas");
     this.context = this.canvas.getContext("2d");
+
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
+    this.canvas.style.position = "absolute";
+    this.canvas.style.top = "0";
+    this.canvas.style.left = "0";
+    this.canvas.style.zIndex = "999999";
+    this.canvas.style.marginBottom = "20px";
+
     this.colors = [
       "black",
       "red",
@@ -160,25 +186,56 @@ class ScreenshotCanvas {
     this.context.lineWidth = newWidth;
   }
 
-  captureScreen() {
-    html2canvas(document.body).then((canvas) => {
+  captureScreen(selection = null) {
+    let rect;
+    const scX = window.scrollX;
+    const scY = window.scrollY;
+    if (selection) {
+      rect = selection._areaRect;
+    }
+    html2canvas(document.body, {
+      useCORS: true,
+      allowTaint: true,
+      scrollX: -scX,
+      scrollY: -scY,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+    }).then((canvas) => {
       const tempCanvas = document.createElement("canvas");
       const tempCtx = tempCanvas.getContext("2d");
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-
-      tempCtx.drawImage(canvas, 0, 0);
-
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      if (rect.width > 10 && rect.height > 10) {
+        tempCanvas.width = rect.width;
+        tempCanvas.height = rect.height;
 
-      this.canvas.width = canvas.width;
-      this.canvas.height = canvas.height;
+
+        tempCtx.drawImage(
+          canvas,
+          rect.left,
+          rect.top,
+          rect.width,
+          rect.height,
+          0,
+          0,
+          rect.width,
+          rect.height
+        );
+
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+      } else {
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        tempCtx.drawImage(canvas, 0, 0);
+
+        this.canvas.width = canvas.width;
+        this.canvas.height = canvas.height;
+      }
 
       this.context.drawImage(tempCanvas, 0, 0);
-
-      this.context.lineWidth = 2;
-      this.context.strokeStyle = "red";
     });
+
+    selection.destroy();
   }
 
   getScreenshotAsDataURL() {
@@ -266,13 +323,14 @@ class FeedbackPopup {
     popup.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
     popup.style.borderRadius = "8px";
     popup.style.display = "flex";
+    popup.style.zIndex = "999999";
     document.body.appendChild(popup);
     return popup;
   }
 
   display() {
     this.popup.appendChild(this.screenshotCanvas.canvas);
-    this.popup.appendChild(this.form.form);
+    //this.popup.appendChild(this.form.form);
   }
 }
 
